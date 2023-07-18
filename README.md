@@ -1,5 +1,24 @@
 # Cloud Storage Api
 
+### Development
+
+#### Start Server
+
+```shell
+./mvnw spring-boot:run
+```
+
+
+#### Create Image 
+
+```shell
+./mvnw spring-boot:build-image
+```
+
+## How?
+1. Created Sprint Boot application using [Spring Initializer](https://start.spring.io/)
+2. Added Spring Data using JPA and using H2 for any DB (if needed)
+
 ### Reference Documentation
 For further reference, please consider the following sections:
 
