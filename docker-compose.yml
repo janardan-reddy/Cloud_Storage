@@ -1,0 +1,24 @@
+services:
+  cs:
+    build: .
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - minio
+  minio:
+    image: "quay.io/minio/minio"
+    command: server "/data" --console-address ":9001"
+    expose:
+      - "9000"
+      - "9001"
+    ports:
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin"
+    volumes:
+      - minio-data:/data
+volumes:
+  minio-data:

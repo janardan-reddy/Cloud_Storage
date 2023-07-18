@@ -9,11 +9,24 @@
 ```
 
 
-#### Create Image 
+#### Create Image using Spring 
 
 ```shell
 ./mvnw spring-boot:build-image
 ```
+
+#### Create Image Docker CLI
+
+```shell
+./mvnw clean package
+docker build -t cloud-storage . 
+```
+
+#### Start MinIO Using Docker
+
+````shell
+docker run -p 9000:9000 -p 9001:9001 -v minio-data:/data -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin quay.io/minio/minio server /data --console-address ":9001"
+````
 
 ## How?
 1. Created Sprint Boot application using [Spring Initializer](https://start.spring.io/)
