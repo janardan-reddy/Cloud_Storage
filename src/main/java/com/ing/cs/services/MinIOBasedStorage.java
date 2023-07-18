@@ -1,10 +1,13 @@
 package com.ing.cs.services;
 
 import com.ing.cs.exception.BucketAlreadyExists;
+import com.ing.cs.exception.CloudStorageException;
 import com.ing.cs.exception.UnknownException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,8 @@ import java.util.List;
 
 @Service
 public class MinIOBasedStorage {
+
+    private final static Logger logger = LoggerFactory.getLogger(MinIOBasedStorage.class);
 
     private final MinioClient minioClient;
 
@@ -25,10 +30,14 @@ public class MinIOBasedStorage {
         try {
             boolean alreadyExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket.name()).build());
             if (alreadyExists) {
+                logger.info("bucket " + bucket + " already exists");
                 throw new BucketAlreadyExists(bucket + " already exists");
             }
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket.name()).region(bucket.region()).build());
+        } catch (CloudStorageException e) {
+            throw e;
         } catch (Exception e) {
+            logger.warn("unknown error creating bucket", e);
             throw new UnknownException("unknown error creating bucket", e);
         }
     }
