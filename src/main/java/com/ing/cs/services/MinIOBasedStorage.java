@@ -33,6 +33,7 @@ public class MinIOBasedStorage {
                 throw new BucketAlreadyExists(bucket + " already exists");
             }
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket.name()).region(bucket.region()).build());
+            logger.info("created bucket " + bucket);
         } catch (CloudStorageException e) {
             throw e;
         } catch (Exception e) {
@@ -58,6 +59,7 @@ public class MinIOBasedStorage {
                     .map(b -> new CloudBucket(b.name(), null))
                     .toList();
         } catch (Exception e) {
+            logger.warn("unknown error listing buckets", e);
             throw new UnknownException("unknown error listing buckets", e);
         }
     }
@@ -79,13 +81,13 @@ public class MinIOBasedStorage {
             minioClient.putObject(putObjectArgs);
             return cloudObject;
         } catch (Exception e) {
+            logger.warn("unknown error creating object", e);
             throw new UnknownException("unknown error creating object", e);
         }
     }
 
 
     public void deleteObject(String bucket, String name) {
-
     }
 
 
