@@ -40,12 +40,7 @@ public class BucketApi {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/{bucketName}")
-    public ResponseEntity<CloudBucketModel> emptyBucket(@PathVariable String bucketName) {
-        return ResponseEntity.notFound().build();
-    }
-
-    private static CloudBucketModel toApiModel(CloudBucket cloudBucket)  {
+    private static CloudBucketModel toApiModel(CloudBucket cloudBucket) {
         CloudBucketModel model = new CloudBucketModel();
         model.setName(cloudBucket.name());
         model.setRegion(cloudBucket.region());

@@ -3,14 +3,13 @@ package com.ing.cs.services;
 import com.ing.cs.exception.BucketAlreadyExists;
 import com.ing.cs.exception.CloudStorageException;
 import com.ing.cs.exception.UnknownException;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
+import io.minio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.List;
 
 
@@ -64,13 +63,24 @@ public class MinIOBasedStorage {
     }
 
 
-    public List<String> listObjects(String bucket) {
+    public List<CloudObject> listObjects(String bucket) {
         return null;
     }
 
 
-    public void createObject(String bucket, CloudObject cloudObject) {
-
+    public CloudObject createObject(String bucket, CloudObject cloudObject, InputStream data) {
+        try {
+            PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(cloudObject.name())
+                    .contentType(cloudObject.contentType())
+                    .stream(data, -1, 5 * 1024 * 1024)
+                    .build();
+            minioClient.putObject(putObjectArgs);
+            return cloudObject;
+        } catch (Exception e) {
+            throw new UnknownException("unknown error creating object", e);
+        }
     }
 
 
