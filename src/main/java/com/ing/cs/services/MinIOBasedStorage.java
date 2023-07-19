@@ -59,15 +59,15 @@ public class MinIOBasedStorage {
     }
 
 
-    public List<CloudObject> listObjects(String bucket) {
+    public List<CloudObject> listObjects(String bucket, String prefix) {
         try {
             ListObjectsArgs lbArgs = ListObjectsArgs.builder()
                     .bucket(bucket)
                     .recursive(true)
+                    .prefix(prefix)
                     .build();
             var response = minioClient.listObjects(lbArgs);
             List<CloudObject> result = new ArrayList<>();
-
             for (Result<Item> itemResult : response) {
                 Item i = itemResult.get();
                 CloudObject obj = toCloudObject(i.objectName(), i.size());
@@ -77,7 +77,7 @@ public class MinIOBasedStorage {
             return result;
 
         } catch (Exception e) {
-            logger.warn("Unknown error listing objects");
+            logger.warn("Unknown error listing objects", e);
             throw new UnknownException("Unknown error listing objects", e);
         }
     }
@@ -127,7 +127,7 @@ public class MinIOBasedStorage {
 
                 GetObjectResponse result = minioClient.getObject(goArgs);
                 CloudObject response = toCloudObject(result.object(), result.headers().size());
-                logger.info("Object found {}", response.toString());
+                logger.info("Object found {}", response);
                 return response;
             } catch (Exception e) {
                 logger.warn("unknown error reading an object", e);
@@ -152,6 +152,16 @@ public class MinIOBasedStorage {
     }
 
     private CloudObject toCloudObject(String name, long size) {
-        return new CloudObject(name, size);
+        String prefix;
+        String onlyName;
+        int lastSlash = name.lastIndexOf("/");
+        if (lastSlash < 0) {
+            prefix = "";
+            onlyName = name;
+        } else {
+            prefix = name.substring(0, lastSlash);
+            onlyName = name.substring(lastSlash+1);
+        }
+        return new CloudObject(prefix, onlyName, size);
     }
 }

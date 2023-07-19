@@ -12,7 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/buckets")
@@ -23,8 +22,8 @@ public class ObjectApi {
         this.minIOBasedStorage = minIOBasedStorage;
     }
     @GetMapping("/{bucketName}/objects")
-    public ResponseEntity<List<CloudObjectModel>> getAllObjects(@PathVariable String bucketName) {
-        var result = minIOBasedStorage.listObjects(bucketName).stream().map(ObjectApi::toApiModel).toList();
+    public ResponseEntity<List<CloudObjectModel>> getAllObjects(@PathVariable String bucketName, @RequestParam(value = "prefix", required = false) String prefix) {
+        var result = minIOBasedStorage.listObjects(bucketName, prefix).stream().map(ObjectApi::toApiModel).toList();
         return ResponseEntity.ok(result);
     }
     @PostMapping("/{bucketName}/objects")
@@ -37,14 +36,14 @@ public class ObjectApi {
         }
     }
 
-    @DeleteMapping("/{bucketName}/objects")
+    @DeleteMapping("/{bucketName}/object")
     public ResponseEntity<CloudObjectModel> deleteObject(@PathVariable String bucketName, @RequestParam("object") String objectPath) {
        minIOBasedStorage.deleteObject(bucketName, objectPath);
        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{bucketName}/object")
-    public ResponseEntity<CloudObjectModel> getObject(@PathVariable String bucketName, @RequestParam(value = "object", required = false) String objectPath) {
+    public ResponseEntity<CloudObjectModel> getObject(@PathVariable String bucketName, @RequestParam(value = "object") String objectPath) {
         var response = minIOBasedStorage.readObject(bucketName, objectPath);
         return ResponseEntity.ok(toApiModel(response));
     }
@@ -58,7 +57,8 @@ public class ObjectApi {
 
     private static CloudObjectModel toApiModel(CloudObject cloudObject) {
         CloudObjectModel model = new CloudObjectModel();
-        model.setObjectName(cloudObject.getName());
+        model.setName(cloudObject.getName());
+        model.setPrefix(cloudObject.getPrefix());
         model.setSize(cloudObject.getSize());
         return model;
     }

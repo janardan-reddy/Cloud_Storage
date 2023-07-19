@@ -2,15 +2,16 @@ package com.ing.cs.api.model;
 
 public class CloudObjectModel {
 
-    private String objectName;
+    private String name;
+    private String prefix;
     private long size;
 
-    public String getObjectName() {
-        return objectName;
+    public String getName() {
+        return name;
     }
 
-    public void setObjectName(String objectName) {
-        this.objectName = objectName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public long getSize() {
@@ -19,5 +20,13 @@ public class CloudObjectModel {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 }
