@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/buckets")
@@ -42,8 +43,8 @@ public class ObjectApi {
        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{bucketName}/objects")
-    public ResponseEntity<CloudObjectModel> getObject(@PathVariable String bucketName, @RequestParam("object") String objectPath) {
+    @GetMapping("/{bucketName}/object")
+    public ResponseEntity<CloudObjectModel> getObject(@PathVariable String bucketName, @RequestParam(value = "object", required = false) String objectPath) {
         var response = minIOBasedStorage.readObject(bucketName, objectPath);
         return ResponseEntity.ok(toApiModel(response));
     }
