@@ -1,0 +1,245 @@
+{
+	"info": {
+		"_postman_id": "c5614acc-5cec-4f25-9b3f-350a26fba744",
+		"name": "Cloud Storage Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28609852"
+	},
+	"item": [
+		{
+			"name": "List Buckets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080/buckets",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"buckets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Bucket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/buckets/b12",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"buckets",
+						"b12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List all Objects",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/buckets/b11/objects",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"buckets",
+						"b11",
+						"objects"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Object",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/buckets/b11/object?object=readme.md",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"buckets",
+						"b11",
+						"object"
+					],
+					"query": [
+						{
+							"key": "object",
+							"value": "readme.md"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Objects by  prefix",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/buckets/b11/objects?prefix=tmp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"buckets",
+						"b11",
+						"objects"
+					],
+					"query": [
+						{
+							"key": "prefix",
+							"value": "tmp"
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Object",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/C:/Users/janar/Projects/Cloud_Storage/README.md"
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/buckets/b11/objects?object=/tmp/tmp/readme.md",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"buckets",
+						"b11",
+						"objects"
+					],
+					"query": [
+						{
+							"key": "object",
+							"value": "/tmp/tmp/readme.md"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Object",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/C:/Users/janar/Projects/Cloud_Storage/README.md"
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/buckets/b11/objects?object=tmp/readme.md",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"buckets",
+						"b11",
+						"objects"
+					],
+					"query": [
+						{
+							"key": "object",
+							"value": "tmp/readme.md"
+						},
+						{
+							"key": "prefix",
+							"value": "tmp",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "password",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "user",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
