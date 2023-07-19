@@ -35,11 +35,6 @@ public class BucketApi {
         return ResponseEntity.ok(toApiModel(bucket));
     }
 
-    @DeleteMapping("/{bucketName}")
-    public ResponseEntity<CloudBucketModel> deleteBucket(@PathVariable String bucketName) {
-        return ResponseEntity.notFound().build();
-    }
-
     private static CloudBucketModel toApiModel(CloudBucket cloudBucket) {
         CloudBucketModel model = new CloudBucketModel();
         model.setName(cloudBucket.name());
