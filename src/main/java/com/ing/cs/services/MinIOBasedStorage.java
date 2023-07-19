@@ -37,7 +37,7 @@ public class MinIOBasedStorage {
                 logger.warn("service -- makeBucket -- bucket " + bucket + " already exists");
                 throw new BucketAlreadyExists(bucket + " already exists");
             }
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket.name()).region(bucket.region()).build());
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket.name()).build());
             logger.info("service -- makeBucket -- created bucket " + bucket);
         } catch (CloudStorageException e) {
             throw e;
@@ -50,7 +50,7 @@ public class MinIOBasedStorage {
     public List<CloudBucket> listBuckets() {
         try {
             var result = minioClient.listBuckets().stream()
-                    .map(b -> new CloudBucket(b.name(), null))
+                    .map(b -> new CloudBucket(b.name()))
                     .toList();
             logger.info("service -- listBuckets -- Buckets found {}", result.size());
             return result;

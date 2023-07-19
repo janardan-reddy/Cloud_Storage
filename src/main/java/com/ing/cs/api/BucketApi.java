@@ -30,7 +30,7 @@ public class BucketApi {
 
     @PostMapping("/{bucketName}")
     public ResponseEntity<CloudBucketModel> addBucket(@PathVariable String bucketName) {
-        var bucket = new CloudBucket(bucketName, null);
+        var bucket = new CloudBucket(bucketName);
         minIOBasedStorage.makeBucket(bucket);
         return ResponseEntity.ok(toApiModel(bucket));
     }
@@ -38,7 +38,6 @@ public class BucketApi {
     private static CloudBucketModel toApiModel(CloudBucket cloudBucket) {
         CloudBucketModel model = new CloudBucketModel();
         model.setName(cloudBucket.name());
-        model.setRegion(cloudBucket.region());
         return model;
     }
 }
