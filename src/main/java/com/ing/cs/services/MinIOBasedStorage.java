@@ -32,11 +32,11 @@ public class MinIOBasedStorage {
         try {
             boolean alreadyExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket.name()).build());
             if (alreadyExists) {
-                logger.info("bucket " + bucket + " already exists");
+                logger.warn("service -- makeBucket -- bucket " + bucket + " already exists");
                 throw new BucketAlreadyExists(bucket + " already exists");
             }
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket.name()).region(bucket.region()).build());
-            logger.info("created bucket " + bucket);
+            logger.info("service -- makeBucket -- created bucket " + bucket);
         } catch (CloudStorageException e) {
             throw e;
         } catch (Exception e) {
@@ -50,10 +50,10 @@ public class MinIOBasedStorage {
             var result = minioClient.listBuckets().stream()
                     .map(b -> new CloudBucket(b.name(), null))
                     .toList();
-            logger.info("Buckets found {}", result.size());
+            logger.info("service -- listBuckets -- Buckets found {}", result.size());
             return result;
         } catch (Exception e) {
-            logger.warn("unknown error listing buckets", e);
+            logger.warn("service -- listBuckets -- unknown error listing buckets", e);
             throw new UnknownException("unknown error listing buckets", e);
         }
     }
@@ -73,11 +73,11 @@ public class MinIOBasedStorage {
                 CloudObject obj = toCloudObject(i.objectName(), i.size());
                 result.add(obj);
             }
-            logger.info("Objects found ({})", result.size());
+            logger.info("service -- listObjects -- Objects found ({})", result.size());
             return result;
 
         } catch (Exception e) {
-            logger.warn("Unknown error listing objects", e);
+            logger.warn("service -- listObjects -- Unknown error listing objects", e);
             throw new UnknownException("Unknown error listing objects", e);
         }
     }
@@ -92,31 +92,29 @@ public class MinIOBasedStorage {
                     .build();
             var result = minioClient.putObject(putObjectArgs);
             CloudObject response = toCloudObject(result.object(), result.headers().size());
-            logger.info("Object created {}", response);
+            logger.info("service -- createObject -- Object created {}", response);
             return response;
         } catch (Exception e) {
-            logger.warn("unknown error creating object", e);
+            logger.warn("service -- createObject -- unknown error creating object", e);
             throw new UnknownException("unknown error creating object", e);
         }
     }
 
     public void deleteObjects(String bucket, String name, String prefix){
         try{
-            logger.info(prefix);
-            logger.info(name);
             if (prefix != null){
                  List<CloudObject> objects = listObjects(bucket, prefix);
                  for( CloudObject obj : objects){
                      deleteObject(bucket,prefix+"/"+obj.getName());
                  }
-                 logger.info("Objects deleted from prefix {}", prefix);
+                 logger.info("service -- deleteObjects -- Objects deleted from prefix {}", prefix);
             }
             else{
                 deleteObject(bucket,name);
             }
 
         }catch(Exception e){
-            logger.warn("Unknown error, deleting objects from prefix ", e);
+            logger.warn("service -- deleteObjects -- Unknown error, deleting objects from prefix ", e);
             throw new UnknownException("Unknown error, deleting objects from prefix ");
         }
     }
@@ -133,10 +131,10 @@ public class MinIOBasedStorage {
 
                 GetObjectResponse result = minioClient.getObject(goArgs);
                 CloudObject response = toCloudObject(result.object(), result.headers().size());
-                logger.info("Object found {}", response);
+                logger.info("service -- readObject -- Object found {}", response);
                 return response;
             } catch (Exception e) {
-                logger.warn("unknown error reading an object", e);
+                logger.warn("service -- readObject -- unknown error reading an object", e);
                 throw new UnknownException("Unknown error while reading object", e);
             }
         }
@@ -150,9 +148,9 @@ public class MinIOBasedStorage {
                     .object(name)
                     .build();
             minioClient.removeObject(roArgs);
-            logger.info("{} object deleted successfully", name);
+            logger.info("service -- deleteObject -- object deleted successfully {}", name);
         } catch (Exception e) {
-            logger.warn("unknown error deleting an object", e);
+            logger.warn("service -- deleteObject -- unknown error deleting an object", e);
             throw new UnknownException("Unknown error deleting an object", e);
         }
     }
@@ -166,7 +164,7 @@ public class MinIOBasedStorage {
             var object = minioClient.statObject(soArgs);
             return object.size() > 0;
         } catch (Exception e) {
-            logger.warn("Object does not exists ", e);
+            logger.warn("service -- isObjectExists -- Object does not exists ", e);
             throw new ObjectDoesNotExists("Object does not exists");
         }
     }
