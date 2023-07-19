@@ -1,6 +1,47 @@
 # Cloud Storage Api
 
-### Development
+## Status
+ - [x] File Upload
+ - [x] File Download
+ - [x] File Delete
+ - [x] List all files
+ - [x] Different File types/sizes
+ - [x] Error Handling/Status codes
+ - [x] Large file upload/downloads
+   - Can be improved
+ - [ ] Documentation
+   - [ ] Swagger partially done, unable get api-docs working
+   - [x] Postman is done
+ - [x] Instructions
+ - [ ] Minikube
+   - [x] Docker
+   - [ ] Docker compose is not exposing port 8080
+   - [ ] Unable to use generated image in Minikube, need more time
+
+
+## Development
+
+#### 1. Start MinIO Using Docker
+
+```shell
+docker run -p 9000:9000 -p 9001:9001 -v minio-data:/data -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin quay.io/minio/minio server /data --console-address ":9001"
+```
+
+
+#### 2. Create Jar
+
+```shell
+./mvnw clean package
+```
+
+#### 3. Create Docker Image
+
+```shell
+docker build -t ing/cloud-storage . 
+```
+
+
+
 
 #### Start Server
 
@@ -9,51 +50,8 @@
 ```
 
 
-#### Create Image using Spring 
-
-```shell
-./mvnw spring-boot:build-image
-```
-
-#### Create Image Docker CLI
-
-```shell
-./mvnw clean package
-```
-
-```shell
-docker build -t ing/cloud-storage . 
-```
-
-#### Start MinIO Using Docker
-
-````shell
-docker run -p 9000:9000 -p 9001:9001 -v minio-data:/data -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin quay.io/minio/minio server /data --console-address ":9001"
-````
 #### Using MiniKube
 
-````shell
+```shell
 ./kube/setup-all.sh
-````
-
-## How?
-1. Created Sprint Boot application using [Spring Initializer](https://start.spring.io/)
-2. Added Spring Data using JPA and using H2 for any DB (if needed)
-
-### Reference Documentation
-For further reference, please consider the following sections:
-
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.1.1/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.1.1/maven-plugin/reference/html/#build-image)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/3.1.1/reference/htmlsingle/#data.sql.jpa-and-spring-data)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/3.1.1/reference/htmlsingle/#web)
-
-### Guides
-The following guides illustrate how to use some features concretely:
-
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-
+```
