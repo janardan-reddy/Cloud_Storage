@@ -100,18 +100,24 @@ public class MinIOBasedStorage {
         }
     }
 
+    public void deleteObjects(String bucket, String name, String prefix){
+        try{
+            logger.info(prefix);
+            logger.info(name);
+            if (prefix != null){
+                 List<CloudObject> objects = listObjects(bucket, prefix);
+                 for( CloudObject obj : objects){
+                     deleteObject(bucket,prefix+"/"+obj.getName());
+                 }
+                 logger.info("Objects deleted from prefix {}", prefix);
+            }
+            else{
+                deleteObject(bucket,name);
+            }
 
-    public void deleteObject(String bucket, String name) {
-        try {
-            RemoveObjectArgs roArgs = RemoveObjectArgs.builder()
-                    .bucket(bucket)
-                    .object(name)
-                    .build();
-            minioClient.removeObject(roArgs);
-            logger.info("{} object deleted successfully", name);
-        } catch (Exception e) {
-            logger.warn("unknown error deleting an object", e);
-            throw new UnknownException("Unknown error deleting an object", e);
+        }catch(Exception e){
+            logger.warn("Unknown error, deleting objects from prefix ", e);
+            throw new UnknownException("Unknown error, deleting objects from prefix ");
         }
     }
 
@@ -135,6 +141,20 @@ public class MinIOBasedStorage {
             }
         }
         return null;
+    }
+
+    private void deleteObject(String bucket, String name) {
+        try {
+            RemoveObjectArgs roArgs = RemoveObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(name)
+                    .build();
+            minioClient.removeObject(roArgs);
+            logger.info("{} object deleted successfully", name);
+        } catch (Exception e) {
+            logger.warn("unknown error deleting an object", e);
+            throw new UnknownException("Unknown error deleting an object", e);
+        }
     }
 
     private boolean isObjectExists(String bucket, String name) {

@@ -36,9 +36,9 @@ public class ObjectApi {
         }
     }
 
-    @DeleteMapping("/{bucketName}/object")
-    public ResponseEntity<CloudObjectModel> deleteObject(@PathVariable String bucketName, @RequestParam("object") String objectPath) {
-       minIOBasedStorage.deleteObject(bucketName, objectPath);
+    @DeleteMapping("/{bucketName}/objects")
+    public ResponseEntity<CloudObjectModel> deleteObjects(@PathVariable String bucketName, @RequestParam(value = "object", required = false) String object, @RequestParam(value = "prefix", required = false) String prefix ) {
+       minIOBasedStorage.deleteObjects(bucketName, object, prefix);
        return ResponseEntity.noContent().build();
     }
 
