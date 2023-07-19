@@ -1,10 +1,7 @@
 package com.ing.cs.api;
 
 import com.ing.cs.api.model.ErrorResponse;
-import com.ing.cs.exception.BucketAlreadyExists;
-import com.ing.cs.exception.CloudStorageException;
-import com.ing.cs.exception.MissingConfigException;
-import com.ing.cs.exception.PartialDataException;
+import com.ing.cs.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +15,10 @@ public class RestResponseEntityExceptionHandler
         extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {BucketAlreadyExists.class})
     protected ResponseEntity<Object> handleBucketAlreadyExists(BucketAlreadyExists ex, WebRequest request) {
+        return handleExceptionInternal(ex, errorResponse("bucket already exists"), new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+    @ExceptionHandler(value = {ObjectDoesNotExists.class})
+    protected ResponseEntity<Object> handleObjectDoesNotExists(ObjectDoesNotExists ex, WebRequest request) {
         return handleExceptionInternal(ex, errorResponse("bucket already exists"), new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 

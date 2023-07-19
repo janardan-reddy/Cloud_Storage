@@ -3,7 +3,7 @@ package com.ing.cs.api.model;
 public class CloudObjectModel {
 
     private String objectName;
-    private String prefixes;
+    private long size;
 
     public String getObjectName() {
         return objectName;
@@ -13,11 +13,11 @@ public class CloudObjectModel {
         this.objectName = objectName;
     }
 
-    public String getPrefixes() {
-        return prefixes;
+    public long getSize() {
+        return size;
     }
 
-    public void setPrefixes(String prefixes) {
-        this.prefixes = prefixes;
+    public void setSize(long size) {
+        this.size = size;
     }
 }
