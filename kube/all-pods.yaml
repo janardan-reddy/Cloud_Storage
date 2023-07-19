@@ -1,0 +1,47 @@
+# Deploys a new MinIO Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: minio
+  name: minio
+spec:
+  containers:
+    - name: minio
+      image: quay.io/minio/minio:latest
+      command:
+        - /bin/bash
+        - -c
+      args:
+      - minio server /data --console-address :9001
+      ports:
+        - containerPort: 9000
+        - containerPort: 9001
+      env:
+          - name: MINIO_ROOT_USER
+            value: minioadmin
+          - name: MINIO_ROOT_PASSWORD
+            value: minioadmin
+      volumeMounts:
+      - mountPath: /data
+        name: minio-data-volume
+  volumes:
+    - name: minio-data-volume
+      hostPath:
+        path: /minio-data
+        type: DirectoryOrCreate
+---
+# Deploys this Api
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: cs
+  name: cs
+spec:
+  containers:
+    - name: cs
+      image: ing/cloud-storage
+      imagePullPolicy: Never
+      ports:
+        - containerPort: 8080

@@ -19,13 +19,21 @@
 
 ```shell
 ./mvnw clean package
-docker build -t cloud-storage . 
+```
+
+```shell
+docker build -t ing/cloud-storage . 
 ```
 
 #### Start MinIO Using Docker
 
 ````shell
 docker run -p 9000:9000 -p 9001:9001 -v minio-data:/data -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin quay.io/minio/minio server /data --console-address ":9001"
+````
+#### Using MiniKube
+
+````shell
+./kube/setup-all.sh
 ````
 
 ## How?
