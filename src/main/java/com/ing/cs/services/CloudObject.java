@@ -4,6 +4,7 @@ package com.ing.cs.services;
 public final class CloudObject {
     private final String name;
     private final String prefix;
+    private final String contentType;
     private final long size;
 
     public String getName() {
@@ -14,9 +15,19 @@ public final class CloudObject {
         return size;
     }
 
-    public CloudObject(String prefix, String name, long size) {
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public CloudObject(String prefix, String name, String contentType, long size) {
         this.prefix = prefix;
         this.name = name;
+        this.contentType = contentType;
         this.size = size;
     }
 
@@ -26,11 +37,6 @@ public final class CloudObject {
                 "prefix=" + prefix + ", " +
                 "name=" + name + ", " +
                 "size=" + size +']';
-    }
-
-
-    public String getPrefix() {
-        return prefix;
     }
 
 }

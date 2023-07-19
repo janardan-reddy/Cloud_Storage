@@ -6,12 +6,14 @@ import com.ing.cs.exception.ObjectDoesNotExists;
 import com.ing.cs.exception.UnknownException;
 import io.minio.*;
 import io.minio.messages.Item;
+import org.apache.commons.compress.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +72,7 @@ public class MinIOBasedStorage {
             List<CloudObject> result = new ArrayList<>();
             for (Result<Item> itemResult : response) {
                 Item i = itemResult.get();
-                CloudObject obj = toCloudObject(i.objectName(), i.size());
+                CloudObject obj = toCloudObject(i.objectName(), null, i.size());
                 result.add(obj);
             }
             logger.info("service -- listObjects -- Objects found ({})", result.size());
@@ -83,7 +85,7 @@ public class MinIOBasedStorage {
     }
 
 
-    public CloudObject createObject(String bucket, String objectPath, InputStream data) {
+    public CloudObject createObject(String bucket, String objectPath, InputStream data, String contentType) {
         try {
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .bucket(bucket)
@@ -91,7 +93,7 @@ public class MinIOBasedStorage {
                     .stream(data, -1, 5 * 1024 * 1024)
                     .build();
             var result = minioClient.putObject(putObjectArgs);
-            CloudObject response = toCloudObject(result.object(), result.headers().size());
+            CloudObject response = toCloudObject(result.object(), contentType, result.headers().size());
             logger.info("service -- createObject -- Object created {}", response);
             return response;
         } catch (Exception e) {
@@ -114,19 +116,21 @@ public class MinIOBasedStorage {
     }
 
 
-    public CloudObject readObject(String bucket, String name) {
-        boolean objectExists = isObjectExists(bucket, name);
-        if (objectExists) {
+    public CloudObject readObject(String bucket, String name, OutputStream outputStream) {
+        StatObjectResponse stats = fetchObjectStats(bucket, name);
+        if (stats.size() > 0) {
             try {
                 GetObjectArgs goArgs = GetObjectArgs.builder()
                         .bucket(bucket)
                         .object(name)
                         .build();
 
-                GetObjectResponse result = minioClient.getObject(goArgs);
-                CloudObject response = toCloudObject(result.object(), result.headers().size());
-                logger.info("service -- readObject -- Object found {}", response);
-                return response;
+                try (GetObjectResponse result = minioClient.getObject(goArgs)) {
+                    CloudObject response = toCloudObject(result.object(), stats.contentType(),  result.headers().size());
+                    IOUtils.copy(result, outputStream);
+                    logger.info("service -- readObject -- Object found {}", response);
+                    return response;
+                }
             } catch (Exception e) {
                 logger.warn("service -- readObject -- unknown error reading an object", e);
                 throw new UnknownException("Unknown error while reading object", e);
@@ -149,21 +153,21 @@ public class MinIOBasedStorage {
         }
     }
 
-    private boolean isObjectExists(String bucket, String name) {
+    private StatObjectResponse fetchObjectStats(String bucket, String name) {
         try {
             StatObjectArgs soArgs = StatObjectArgs.builder()
                     .bucket(bucket)
                     .object(name)
                     .build();
-            var object = minioClient.statObject(soArgs);
-            return object.size() > 0;
+            return minioClient.statObject(soArgs);
         } catch (Exception e) {
-            logger.warn("service -- isObjectExists -- Object does not exists ", e);
+            logger.warn("service -- fetchObjectStats -- Object does not exists ", e);
             throw new ObjectDoesNotExists("Object does not exists");
         }
     }
 
-    private CloudObject toCloudObject(String name, long size) {
+
+    private CloudObject toCloudObject(String name, String contentType, long size) {
         String prefix;
         String onlyName;
         int lastSlash = name.lastIndexOf("/");
@@ -174,6 +178,6 @@ public class MinIOBasedStorage {
             prefix = name.substring(0, lastSlash);
             onlyName = name.substring(lastSlash+1);
         }
-        return new CloudObject(prefix, onlyName, size);
+        return new CloudObject(prefix, onlyName, contentType, size);
     }
 }
