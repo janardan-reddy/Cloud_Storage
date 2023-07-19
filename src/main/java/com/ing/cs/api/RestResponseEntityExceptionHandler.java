@@ -37,6 +37,11 @@ public class RestResponseEntityExceptionHandler
         return handleExceptionInternal(ex, errorResponse("failed to read object content"), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = {CloudStorageHttpException.class})
+    protected ResponseEntity<Object> handleMissingConfigException(CloudStorageHttpException ex, WebRequest request) {
+        return handleExceptionInternal(ex, errorResponse(ex.getMessage()), new HttpHeaders(), ex.getStatusCode(), request);
+    }
+
     public static ErrorResponse errorResponse(String message) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(message);

@@ -1,17 +1,22 @@
 package com.ing.cs.api;
 
 import com.ing.cs.api.model.CloudObjectModel;
+import com.ing.cs.exception.CloudStorageHttpException;
 import com.ing.cs.exception.PartialDataException;
 import com.ing.cs.services.CloudObject;
 import com.ing.cs.services.MinIOBasedStorage;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/buckets")
@@ -38,7 +43,13 @@ public class ObjectApi {
 
     @DeleteMapping("/{bucketName}/objects")
     public ResponseEntity<CloudObjectModel> deleteObjects(@PathVariable String bucketName, @RequestParam(value = "object", required = false) String object, @RequestParam(value = "prefix", required = false) String prefix ) {
-       minIOBasedStorage.deleteObjects(bucketName, object, prefix);
+        if (object != null) {
+            minIOBasedStorage.deleteObject(bucketName, object);
+        } else if (prefix != null) {
+            minIOBasedStorage.deleteObjectsByPrefix(bucketName, prefix);
+        } else {
+            throw CloudStorageHttpException.forStatus(HttpStatus.BAD_REQUEST, "either object or prefix is mandatory");
+        }
        return ResponseEntity.noContent().build();
     }
 

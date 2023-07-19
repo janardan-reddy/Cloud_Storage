@@ -100,19 +100,13 @@ public class MinIOBasedStorage {
         }
     }
 
-    public void deleteObjects(String bucket, String name, String prefix){
+    public void deleteObjectsByPrefix(String bucket, String prefix) {
         try{
-            if (prefix != null){
                  List<CloudObject> objects = listObjects(bucket, prefix);
                  for( CloudObject obj : objects){
                      deleteObject(bucket,prefix+"/"+obj.getName());
                  }
                  logger.info("service -- deleteObjects -- Objects deleted from prefix {}", prefix);
-            }
-            else{
-                deleteObject(bucket,name);
-            }
-
         }catch(Exception e){
             logger.warn("service -- deleteObjects -- Unknown error, deleting objects from prefix ", e);
             throw new UnknownException("Unknown error, deleting objects from prefix ");
@@ -141,7 +135,7 @@ public class MinIOBasedStorage {
         return null;
     }
 
-    private void deleteObject(String bucket, String name) {
+    public void deleteObject(String bucket, String name) {
         try {
             RemoveObjectArgs roArgs = RemoveObjectArgs.builder()
                     .bucket(bucket)

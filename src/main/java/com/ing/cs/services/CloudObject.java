@@ -2,9 +2,9 @@ package com.ing.cs.services;
 
 
 public final class CloudObject {
-    private String name;
-    private String prefix;
-    private long size;
+    private final String name;
+    private final String prefix;
+    private final long size;
 
     public String getName() {
         return name;
@@ -33,7 +33,4 @@ public final class CloudObject {
         return prefix;
     }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
 }
